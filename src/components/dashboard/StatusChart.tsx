@@ -28,7 +28,7 @@ const StatusChart: React.FC<StatusChartProps> = ({
   unknown
 }) => {
   const data: ChartData<'doughnut'> = {
-    labels: ['Operational', 'Maintenance', 'Repair', 'Critical', 'Unknown'],
+    labels: ['Operational', 'Maintenance', 'Repair', 'Critical', 'unknown'],
     datasets: [
       {
         data: [operational, maintenance, repair, critical, unknown],

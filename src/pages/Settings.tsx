@@ -1,158 +1,173 @@
-import React, { useState } from 'react';
-import Card from '../components/ui/Card';
-import Button from '../components/ui/Button';
-import { Save, Download, Upload } from 'lucide-react';
+import React, { useState } from "react";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import { Save, LogOut } from "lucide-react";
+import { useAuth } from "../components/contexts/AuthContext";
 
 const Settings: React.FC = () => {
-  const [labName, setLabName] = useState('UAV Maintenance Lab');
-  const [managerName, setManagerName] = useState('John Doe');
-  const [managerEmail, setManagerEmail] = useState('john.doe@example.com');
-  const [darkMode, setDarkMode] = useState(false);
-  
-  const handleExportData = () => {
-    // In a real app, this would export data from the database
-    alert('Data export functionality would be implemented here.');
+  const { user, signOut, updateEmail, updatePassword, error } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  // Form states
+  const [email, setEmail] = useState(user?.email || "");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleUpdateEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setSuccessMessage("");
+
+    try {
+      await updateEmail(email);
+      setSuccessMessage("Email updated successfully");
+    } catch (error) {
+      // Error is handled by AuthContext
+    } finally {
+      setLoading(false);
+    }
   };
-  
-  const handleImportData = () => {
-    // In a real app, this would import data into the database
-    alert('Data import functionality would be implemented here.');
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      return;
+    }
+
+    setLoading(true);
+    setSuccessMessage("");
+
+    try {
+      await updatePassword(newPassword);
+      setSuccessMessage("Password updated successfully");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error) {
+      // Error is handled by AuthContext
+    } finally {
+      setLoading(false);
+    }
   };
-  
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold text-gray-800">Settings</h2>
-      
+      <h2 className="text-2xl font-semibold text-gray-800">Account Settings</h2>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 text-green-600 px-4 py-3 rounded-md">
+          {successMessage}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card title="Lab Information">
-          <div className="space-y-4">
+        <Card title="Email Settings">
+          <form onSubmit={handleUpdateEmail} className="space-y-4">
             <div>
-              <label htmlFor="labName" className="block text-sm font-medium text-gray-700">
-                Lab Name
-              </label>
-              <input
-                type="text"
-                id="labName"
-                value={labName}
-                onChange={(e) => setLabName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="managerName" className="block text-sm font-medium text-gray-700">
-                Manager Name
-              </label>
-              <input
-                type="text"
-                id="managerName"
-                value={managerName}
-                onChange={(e) => setManagerName(e.target.value)}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="managerEmail" className="block text-sm font-medium text-gray-700">
-                Manager Email
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email Address
               </label>
               <input
                 type="email"
-                id="managerEmail"
-                value={managerEmail}
-                onChange={(e) => setManagerEmail(e.target.value)}
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
               />
             </div>
-            
-            <Button variant="primary" icon={<Save className="h-4 w-4" />}>
-              Save Settings
+
+            <Button
+              type="submit"
+              variant="primary"
+              icon={<Save className="h-4 w-4" />}
+              isLoading={loading}
+            >
+              Update Email
             </Button>
-          </div>
+          </form>
         </Card>
-        
-        <Card title="Application Settings">
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="darkMode"
-                checked={darkMode}
-                onChange={(e) => setDarkMode(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="darkMode" className="ml-2 block text-sm text-gray-700">
-                Dark Mode (Coming Soon)
+
+        <Card title="Password Settings">
+          <form onSubmit={handleUpdatePassword} className="space-y-4">
+            <div>
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                New Password
               </label>
+              <input
+                type="password"
+                id="newPassword"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+                minLength={6}
+              />
             </div>
-            
-            <div className="pt-4">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">Data Management</h4>
-              
-              <div className="flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0">
-                <Button
-                  variant="outline"
-                  onClick={handleExportData}
-                  icon={<Download className="h-4 w-4" />}
-                >
-                  Export Data
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={handleImportData}
-                  icon={<Upload className="h-4 w-4" />}
-                >
-                  Import Data
-                </Button>
-              </div>
+
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Confirm New Password
+              </label>
+              <input
+                type="password"
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+                minLength={6}
+              />
+              {newPassword !== confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">
+                  Passwords do not match
+                </p>
+              )}
             </div>
-          </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              icon={<Save className="h-4 w-4" />}
+              isLoading={loading}
+              disabled={newPassword !== confirmPassword}
+            >
+              Update Password
+            </Button>
+          </form>
         </Card>
-        
-        <Card title="Database Connection">
+
+        <Card title="Account Actions">
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              In a production environment, this application would connect to a MySQL database to store UAV maintenance records. The connection details would be configured here.
+              Sign out from your account. You will need to sign in again to
+              access the application.
             </p>
-            
-            <div>
-              <label htmlFor="dbHost" className="block text-sm font-medium text-gray-700">
-                Database Host
-              </label>
-              <input
-                type="text"
-                id="dbHost"
-                value="localhost"
-                disabled
-                className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="dbPort" className="block text-sm font-medium text-gray-700">
-                Database Port
-              </label>
-              <input
-                type="text"
-                id="dbPort"
-                value="3306"
-                disabled
-                className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="dbName" className="block text-sm font-medium text-gray-700">
-                Database Name
-              </label>
-              <input
-                type="text"
-                id="dbName"
-                value="drone_maintenance"
-                disabled
-                className="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm"
-              />
-            </div>
+
+            <Button
+              variant="danger"
+              onClick={() => signOut()}
+              icon={<LogOut className="h-4 w-4" />}
+            >
+              Sign Out
+            </Button>
           </div>
         </Card>
       </div>

@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS uavs (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   uav_number text UNIQUE NOT NULL,
   location text NOT NULL,
-  status uav_status NOT NULL DEFAULT 'unknown',
+  status uav_status NOT NULL,
   malfunctions text NOT NULL,
   arrival_date date NOT NULL,
   completion_date date,

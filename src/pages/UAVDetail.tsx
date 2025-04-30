@@ -4,10 +4,11 @@ import useUAVStore from '../store/uavStore';
 import Card from '../components/ui/Card';
 import StatusBadge from '../components/ui/StatusBadge';
 import Button from '../components/ui/Button';
-import { Edit, ArrowLeft, Save } from 'lucide-react';
+import { Edit, ArrowLeft } from 'lucide-react';
 import UAVForm from '../components/uav/UAVForm';
 import SignatureCapture from '../components/uav/SignatureCapture';
 import { format, parseISO } from 'date-fns';
+import { UAV } from '../types';
 
 const UAVDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();

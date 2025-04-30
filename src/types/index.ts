@@ -22,3 +22,24 @@ export interface DashboardStats {
   recentArrivals: number;
   completedToday: number;
 }
+
+export interface MaintenanceStep {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  isCompleted: boolean;
+  estimatedTime: string;
+  tools: string[];
+  safetyNotes?: string;
+}
+
+export interface MaintenanceProcedure {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  duration: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  steps: MaintenanceStep[];
+}

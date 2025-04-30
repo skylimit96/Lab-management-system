@@ -1,6 +1,7 @@
 import React from 'react';
-import { Menu, Search, Bell } from 'lucide-react';
+import { Menu, Search, Bell, LogOut } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -8,6 +9,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const location = useLocation();
+  const { signOut, user } = useAuth();
   
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -55,8 +57,17 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
         </button>
         
-        <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-          AM
+        <div className="flex items-center space-x-4">
+          <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+            {user?.email?.charAt(0).toUpperCase()}
+          </div>
+          
+          <button
+            onClick={() => signOut()}
+            className="text-gray-500 hover:text-gray-700 focus:outline-none"
+          >
+            <LogOut className="h-6 w-6" />
+          </button>
         </div>
       </div>
     </header>

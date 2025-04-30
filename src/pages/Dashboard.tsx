@@ -1,14 +1,46 @@
-import React from 'react';
-import useUAVStore from '../store/uavStore';
-import StatCard from '../components/dashboard/StatCard';
-import StatusChart from '../components/dashboard/StatusChart';
-import RecentArrivals from '../components/dashboard/RecentArrivals';
-import { Bone as Drone, Calendar, AlertCircle, CheckCircle } from 'lucide-react';
+import React, { useEffect } from "react";
+import useUAVStore from "../store/uavStore";
+import StatCard from "../components/dashboard/StatCard";
+import StatusChart from "../components/dashboard/StatusChart";
+import RecentArrivals from "../components/dashboard/RecentArrivals";
+import {
+  Bone as Drone,
+  Calendar,
+  AlertCircle,
+  CheckCircle,
+  Loader,
+} from "lucide-react";
 
 const Dashboard: React.FC = () => {
-  const { uavs, getStats } = useUAVStore();
+  const { uavs, getStats, fetchUAVs, loading, error } = useUAVStore();
   const stats = getStats();
-  
+
+  useEffect(() => {
+    fetchUAVs();
+  }, [fetchUAVs]);
+
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600 mb-4">{error}</p>
+        <button
+          onClick={() => fetchUAVs()}
+          className="text-blue-600 hover:text-blue-800"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (loading && !uavs.length) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader className="h-8 w-8 animate-spin text-blue-500" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -18,7 +50,7 @@ const Dashboard: React.FC = () => {
           icon={<Drone className="h-6 w-6" />}
           color="blue"
         />
-        
+
         <StatCard
           title="Recent Arrivals"
           value={stats.recentArrivals}
@@ -27,14 +59,14 @@ const Dashboard: React.FC = () => {
           trendValue="Last 7 days"
           color="amber"
         />
-        
+
         <StatCard
           title="Critical Issues"
           value={stats.critical}
           icon={<AlertCircle className="h-6 w-6" />}
           color="red"
         />
-        
+
         <StatCard
           title="Completed Today"
           value={stats.completedToday}
@@ -42,7 +74,7 @@ const Dashboard: React.FC = () => {
           color="green"
         />
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <StatusChart
@@ -53,7 +85,7 @@ const Dashboard: React.FC = () => {
             unknown={stats.unknown}
           />
         </div>
-        
+
         <div>
           <RecentArrivals uavs={uavs} />
         </div>

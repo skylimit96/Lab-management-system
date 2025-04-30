@@ -11,7 +11,6 @@ interface RecentArrivalsProps {
 }
 
 const RecentArrivals: React.FC<RecentArrivalsProps> = ({ uavs }) => {
-  // Sort by arrival date (most recent first)
   const sortedUAVs = [...uavs]
     .sort((a, b) => new Date(b.arrivalDate).getTime() - new Date(a.arrivalDate).getTime())
     .slice(0, 5);

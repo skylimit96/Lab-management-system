@@ -6,6 +6,7 @@ import { Plus, Search, Filter, Loader } from 'lucide-react';
 import { Status } from '../types';
 import UAVForm from '../components/uav/UAVForm';
 import Card from '../components/ui/Card';
+import { UAV } from '../types';
 
 const UAVList: React.FC = () => {
   const { 
